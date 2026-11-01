@@ -105,17 +105,19 @@ export const NOTE_FONT_SIZES = { s: 16, m: 20, l: 26, xl: 32 }
 
 export const DASH_IDS = ['draw', 'solid', 'dashed', 'dotted']
 export const FILL_IDS = ['none', 'semi', 'solid', 'pattern']
+export const FONT_IDS = ['draw', 'sans', 'serif', 'mono']
 
 export const FONTS = {
-  // 'Quickdraw Hand' is Libre Baskerville, bundled via quickdraw.css; the rest are
-  // the fallbacks while it loads (or if the stylesheet isn't included).
-  // 'QuickdrawHand' (no space) names the same faces: headless Skia resolves it
-  // reliably, while its spaced-alias matching inside font lists is broken —
+  // 'Quickdraw Hand' is Libre Baskerville, bundled via quickdraw.css; Roboto
+  // (sans) and Roboto Mono likewise (Apache 2.0, see fonts/ROBOTO-LICENSE.txt).
+  // Single-word aliases head the stacks that need them: headless Skia
+  // resolves multi-word families only as a sole family, never in a list —
   // browsers match either name to the same files, so output is identical.
+  // Unbundled names stay as fallbacks for hosts without the stylesheet.
   draw: "'QuickdrawHand', 'Quickdraw Hand', 'Libre Baskerville', 'Baskerville', Georgia, serif",
-  sans: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
+  sans: "'Roboto', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
   serif: "'Iowan Old Style', 'New York', Palatino, Georgia, serif",
-  mono: "'SF Mono', ui-monospace, Menlo, monospace",
+  mono: "'RobotoMono', 'Roboto Mono', 'SF Mono', ui-monospace, Menlo, monospace",
 }
 
 export const GEO_IDS = ['rectangle', 'ellipse', 'triangle', 'diamond', 'hexagon', 'star', 'cloud']
