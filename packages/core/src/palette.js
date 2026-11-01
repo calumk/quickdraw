@@ -108,16 +108,18 @@ export const FILL_IDS = ['none', 'semi', 'solid', 'pattern']
 export const FONT_IDS = ['draw', 'sans', 'serif', 'mono']
 
 export const FONTS = {
-  // 'Quickdraw Hand' is Libre Baskerville, bundled via quickdraw.css; Roboto
-  // (sans) and Roboto Mono likewise (Apache 2.0, see fonts/ROBOTO-LICENSE.txt).
+  // 'Quickdraw Hand' is Libre Baskerville, bundled via quickdraw.css; other
+  // stacks stay on system fonts as upstream (bundling them would silently
+  // restyle existing boards). Developers who want more can bundle their own
+  // faces and point stacks at them with setFontStacks() + @font-face.
   // Single-word aliases head the stacks that need them: headless Skia
   // resolves multi-word families only as a sole family, never in a list —
   // browsers match either name to the same files, so output is identical.
   // Unbundled names stay as fallbacks for hosts without the stylesheet.
   draw: "'QuickdrawHand', 'Quickdraw Hand', 'Libre Baskerville', 'Baskerville', Georgia, serif",
-  sans: "'Roboto', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
+  sans: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
   serif: "'Iowan Old Style', 'New York', Palatino, Georgia, serif",
-  mono: "'RobotoMono', 'Roboto Mono', 'SF Mono', ui-monospace, Menlo, monospace",
+  mono: "'SF Mono', ui-monospace, Menlo, monospace",
 }
 
 // Pluggable font stacks: remap any style id to a full CSS font-family stack
