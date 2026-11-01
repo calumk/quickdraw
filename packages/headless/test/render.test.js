@@ -360,22 +360,24 @@ describe('fonts', () => {
     await renderPng(new Store().getSnapshot(), { width: 32, height: 32, padding: 0 })
     const { fontFiles, registerFontFamily } = await import('../src/fonts.js')
     const { setFontStacks, resetFontStacks } = await import('@quickdrawjs/core')
-    const monoTtf = fontFiles().find((f) => f.endsWith('roboto-mono-500.ttf'))
-    expect(monoTtf).toBeTruthy()
-    registerFontFamily('TestMono', [monoTtf])
-    setFontStacks({ mono: "'TestMono', monospace" })
+    const handTtf = fontFiles().find((f) => f.endsWith('libre-baskerville-500.ttf'))
+    expect(handTtf).toBeTruthy()
+    // same bundled file under a custom alias: proves the stack→registration
+    // roundtrip without needing extra font binaries in the repo
+    registerFontFamily('TestHand', [handTtf])
+    setFontStacks({ draw: "'TestHand', serif" })
     try {
       // the override resolves through the whole pipeline, not just measurement
       const c = new Canvas(8, 8)
       const ctx = c.getContext('2d')
-      ctx.font = '500 20px RobotoMono'
+      ctx.font = '500 20px QuickdrawHand'
       const bundled = ctx.measureText('Pack 0123').width
-      ctx.font = `500 20px 'TestMono', monospace`
+      ctx.font = `500 20px 'TestHand', serif`
       expect(ctx.measureText('Pack 0123').width).toBeCloseTo(bundled, 5)
       const store = new Store()
       store.put({
         id: 'shape:cm', typeName: 'shape', type: 'text', x: 10, y: 10, rot: 0, z: 1,
-        props: { text: 'custom mono', size: 'm', color: 'black', font: 'mono' },
+        props: { text: 'custom hand', size: 'm', color: 'black', font: 'draw' },
       })
       const pixels = await readPixels(await renderPng(store.getSnapshot(), {
         width: 220, height: 80, fit: 'viewport',
@@ -385,7 +387,7 @@ describe('fonts', () => {
     } finally {
       resetFontStacks()
     }
-    expect(() => registerFontFamily('', [monoTtf])).toThrowError(RenderError)
+    expect(() => registerFontFamily('', [handTtf])).toThrowError(RenderError)
     expect(() => registerFontFamily('Ghost', ['/nope/missing.ttf'])).toThrowError(
       expect.objectContaining({ code: 'FONT_FILE_MISSING' }),
     )

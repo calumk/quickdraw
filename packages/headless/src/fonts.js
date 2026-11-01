@@ -1,15 +1,14 @@
 // Bundled-font registration for server-side text. The engine's `draw` stack
-// starts with the Quickdraw Hand face (Libre Baskerville, OFL 1.1), `sans`
-// with Roboto and `mono` with Roboto Mono (both Apache 2.0) — all shipped
+// starts with the Quickdraw Hand face (Libre Baskerville, OFL 1.1), shipped
 // inside @quickdrawjs/core and registered here with Skia before any text is
 // measured or drawn. Deterministic: the same files load on every server
 // instead of whatever the OS happens to have.
 //
-// Three skia-canvas quirks dictate the packaging (see README):
+// Two skia-canvas quirks dictate the packaging (see README):
 // woff2 files parse but never shape, multi-word family names never match
 // inside font lists, and for a multi-file family only the last file serves
-// text. So each family registers as ONE merged TTF under a SINGLE-WORD alias
-// that heads its stack: 'QuickdrawHand', 'Roboto', 'RobotoMono'.
+// text. So the family registers as ONE merged TTF under a SINGLE-WORD alias
+// that heads its stack: 'QuickdrawHand'.
 
 import { FontLibrary } from 'skia-canvas'
 import { createRequire } from 'node:module'
@@ -20,8 +19,6 @@ import { RenderError } from './errors.js'
 
 const FAMILIES = [
   { name: 'QuickdrawHand', files: ['libre-baskerville-500.ttf'] },
-  { name: 'Roboto', files: ['roboto-500.ttf'] },
-  { name: 'RobotoMono', files: ['roboto-mono-500.ttf'] },
 ]
 
 const registered = new Set()
