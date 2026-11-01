@@ -108,8 +108,11 @@ export const FILL_IDS = ['none', 'semi', 'solid', 'pattern']
 
 export const FONTS = {
   // 'Quickdraw Hand' is Libre Baskerville, bundled via quickdraw.css; the rest are
-  // the fallbacks while it loads (or if the stylesheet isn't included)
-  draw: "'Quickdraw Hand', 'Libre Baskerville', 'Baskerville', Georgia, serif",
+  // the fallbacks while it loads (or if the stylesheet isn't included).
+  // 'QuickdrawHand' (no space) names the same faces: headless Skia resolves it
+  // reliably, while its spaced-alias matching inside font lists is broken —
+  // browsers match either name to the same files, so output is identical.
+  draw: "'QuickdrawHand', 'Quickdraw Hand', 'Libre Baskerville', 'Baskerville', Georgia, serif",
   sans: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif",
   serif: "'Iowan Old Style', 'New York', Palatino, Georgia, serif",
   mono: "'SF Mono', ui-monospace, Menlo, monospace",
