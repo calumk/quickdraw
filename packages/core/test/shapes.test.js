@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest'
-import { localBounds, pageBounds, hitShape, marqueeHits, scaleShape, textLayout, geoOutline, resetTextLayouts } from '../src/shapes.js'
+import { localBounds, pageBounds, hitShape, marqueeHits, scaleShape, textLayout, geoOutline, resetTextLayouts, sortShapesForRender } from '../src/shapes.js'
 import { Store } from '../src/store.js'
 
 const geo = (over = {}, props = {}) => ({
@@ -163,5 +163,27 @@ describe('hand-drawn outlines and text re-measure', () => {
     expect(textLayout(t)).toBe(a)
     resetTextLayouts()
     expect(textLayout(t)).not.toBe(a)
+  })
+})
+
+describe('render order', () => {
+  const shape = (id, type, z) => ({ id, typeName: 'shape', type, x: 0, y: 0, rot: 0, z, props: {} })
+  const order = (shapes) => sortShapesForRender(shapes).map((s) => s.id)
+
+  it('paints images beneath highlighters beneath everything else, whatever the z-index', () => {
+    expect(order([
+      shape('geo-hi', 'geo', 99),
+      shape('hl-lo', 'highlight', 1),
+      shape('img-mid', 'image', 50),
+    ])).toEqual(['img-mid', 'hl-lo', 'geo-hi'])
+  })
+
+  it('orders within each layer by z, ties by id', () => {
+    expect(order([
+      shape('b', 'geo', 2),
+      shape('a', 'geo', 1),
+      shape('d', 'image', 9),
+      shape('c', 'image', 3),
+    ])).toEqual(['c', 'd', 'a', 'b'])
   })
 })

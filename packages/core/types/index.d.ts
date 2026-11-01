@@ -165,7 +165,7 @@ export function drawShape(
     patternCache?: Map<string, CanvasPattern | null>;
   }
 ): void
-/** Render order: highlighters first (each group by z, ties by id). */
+/** Render order: images, then highlighters, then everything else (each group by z, ties by id). */
 export function sortShapesForRender(shapes: ShapeRecord[]): ShapeRecord[]
 /**
  * Inject a non-browser rendering backend (Node/Skia). Never patches

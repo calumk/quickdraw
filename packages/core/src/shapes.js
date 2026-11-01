@@ -41,12 +41,13 @@ export function resetShapePlatform() {
 const path2DFor = (opts) => opts?.Path2D ?? shapePlatform.Path2D ?? globalThis.Path2D
 
 // Render order, shared by the editor and headless export so they cannot
-// drift: highlighters soak into the paper beneath the ink, like on a real
-// page — highlights render first (in their own z order), everything else
-// above, ties broken by id.
+// drift: images are the paper — always beneath everything else — then
+// highlighters soak in above them, like marker over print, with the ink on
+// top. Within each layer shapes order by z-index, ties broken by id.
+const layerOf = (s) => (s.type === 'image' ? 0 : s.type === 'highlight' ? 1 : 2)
 export const sortShapesForRender = (shapes) => [...shapes].sort(
   (a, b) =>
-    (a.type === 'highlight' ? 0 : 1) - (b.type === 'highlight' ? 0 : 1) ||
+    layerOf(a) - layerOf(b) ||
     a.z - b.z ||
     (a.id < b.id ? -1 : 1),
 )

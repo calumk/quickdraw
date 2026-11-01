@@ -104,9 +104,10 @@ Everything the editor draws from the document: freehand pen strokes (with
 pressure), highlighters, rectangles/ellipses/triangles/diamonds/hexagons/
 stars/clouds, lines and bent arrows, text, sticky notes, embedded images —
 including rotation, scaling, opacity, dash styles, patterned/semi/solid fills
-and shadows. Stacking matches the editor: **highlighters paint beneath other
-shapes**, each group ordered by z-index (shared `sortShapesForRender` helper,
-so the two cannot drift). Editor-only chrome — selection handles, hover
+and shadows. Stacking matches the editor: **images are the paper, painted
+beneath everything; highlighters soak in above them; the ink goes on top.**
+Within each layer shapes order by z-index (shared `sortShapesForRender`
+helper, so the two cannot drift). Editor-only chrome — selection handles, hover
 states, the text editor, laser-pointer scribbles — is not in the snapshot and
 is never drawn.
 
@@ -139,7 +140,7 @@ The core engine needed one small, backward-compatible seam
   factory). Per-render state — decoded images, hatch-pattern cache — travels
   on `drawShape`'s `opts` (`{ images, patternCache, Path2D }`), so concurrent
   renders of different snapshots cannot contaminate each other.
-- `sortShapesForRender()` — the highlighter-beneath ordering, now shared by
+- `sortShapesForRender()` — the image/highlighter/ink layer ordering, now shared by
   `Editor.shapesSorted()` and the headless pass.
 - `drawShape()` honors `opts.images` (pre-decoded bitmaps, bypassing the
   browser `Image` loader) and per-render pattern caches.

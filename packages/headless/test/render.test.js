@@ -171,6 +171,39 @@ describe('stacking order', () => {
     const [er, eg, eb] = hex('#1d1d1d')
     expect(Math.abs(r - er) + Math.abs(g - eg) + Math.abs(b - eb)).toBeLessThanOrEqual(6)
   })
+
+  it('paints images beneath highlighters beneath ink, whatever the z-index', async () => {
+    const store = new Store()
+    // image on top by z-index, highlight and geo below it — layers still win
+    store.put({ id: 'asset:img1', typeName: 'asset', src: await testImageURL(30), w: 30, h: 30 })
+    store.put({
+      id: 'shape:img', typeName: 'shape', type: 'image', x: 0, y: 0, rot: 0, z: 99,
+      props: { w: 60, h: 60, assetId: 'asset:img1' },
+    })
+    store.put({
+      id: 'shape:hl', typeName: 'shape', type: 'highlight', x: 0, y: 0, rot: 0, z: 1,
+      props: { pts: [0, 30, 0.5, 60, 30, 0.5], size: 'm', color: 'yellow' },
+    })
+    store.put({
+      id: 'shape:geo', typeName: 'shape', type: 'geo', x: 20, y: 20, rot: 0, z: 2,
+      props: { geo: 'rectangle', w: 40, h: 40, color: 'red', size: 'm', dash: 'solid', fill: 'solid' },
+    })
+    const png = await renderPng(store.getSnapshot(), {
+      width: 60, height: 60, fit: 'viewport',
+      viewport: { x: 0, y: 0, w: 60, h: 60 }, padding: 0,
+    })
+    const pixels = await readPixels(png)
+    // image alone: the embedded green survives
+    expect(px(pixels, 10, 45).slice(0, 3)).toEqual(hex('#00c864'))
+    // image + highlight: the wash multiplies over the photo (opaque result)
+    const [r, g, b, a] = px(pixels, 10, 30)
+    expect(a).toBe(255)
+    expect(Math.abs(r - 0) + Math.abs(g - 164) + Math.abs(b - 61)).toBeLessThanOrEqual(45)
+    expect([r, g, b]).not.toEqual(hex('#00c864'))
+    // image + highlight + geo: the ink covers both
+    expect(px(pixels, 30, 30).slice(0, 3)).toEqual(hex('#f9dcdc'))
+    expect(px(pixels, 30, 50).slice(0, 3)).toEqual(hex('#f9dcdc'))
+  })
 })
 
 describe('text and sticky notes', () => {
