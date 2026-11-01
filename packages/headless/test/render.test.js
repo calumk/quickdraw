@@ -353,6 +353,40 @@ describe('fonts', () => {
     }
     expect(render(`500 26px 'Quickdraw Hand'`)).not.toBe(render('500 26px Georgia'))
   })
+
+  it('renders developer-registered custom families end to end', async () => {
+    const { fontFiles, registerFontFamily } = await import('../src/fonts.js')
+    const { setFontStacks, resetFontStacks } = await import('@quickdrawjs/core')
+    const monoTtf = fontFiles().find((f) => f.endsWith('roboto-mono-500.ttf'))
+    expect(monoTtf).toBeTruthy()
+    registerFontFamily('TestMono', [monoTtf])
+    setFontStacks({ mono: "'TestMono', monospace" })
+    try {
+      // the override resolves through the whole pipeline, not just measurement
+      const c = new Canvas(8, 8)
+      const ctx = c.getContext('2d')
+      ctx.font = '500 20px RobotoMono'
+      const bundled = ctx.measureText('Pack 0123').width
+      ctx.font = `500 20px 'TestMono', monospace`
+      expect(ctx.measureText('Pack 0123').width).toBeCloseTo(bundled, 5)
+      const store = new Store()
+      store.put({
+        id: 'shape:cm', typeName: 'shape', type: 'text', x: 10, y: 10, rot: 0, z: 1,
+        props: { text: 'custom mono', size: 'm', color: 'black', font: 'mono' },
+      })
+      const pixels = await readPixels(await renderPng(store.getSnapshot(), {
+        width: 220, height: 80, fit: 'viewport',
+        viewport: { x: 0, y: 0, w: 220, h: 80 }, padding: 0,
+      }))
+      expect(countOpaque(pixels)).toBeGreaterThan(30)
+    } finally {
+      resetFontStacks()
+    }
+    expect(() => registerFontFamily('', [monoTtf])).toThrowError(RenderError)
+    expect(() => registerFontFamily('Ghost', ['/nope/missing.ttf'])).toThrowError(
+      expect.objectContaining({ code: 'FONT_FILE_MISSING' }),
+    )
+  })
 })
 
 describe('determinism and concurrency', () => {
