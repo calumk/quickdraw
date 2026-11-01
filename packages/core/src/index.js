@@ -7,7 +7,7 @@ export { Store, newId, isDiffEmpty, invertDiff, composeDiff, packDiff, unpackDif
 export { buildUI } from './ui.js'
 export {
   themeOf, THEMES, COLOR_IDS, SIZE_IDS, DASH_IDS, FILL_IDS, FONT_IDS, GEO_IDS, GRID_IDS,
-  SIZES, FONT_SIZES, FONTS,
+  SIZES, FONT_SIZES, FONTS, setFontStacks, resetFontStacks, fontStackOf,
 } from './palette.js'
 export { pageBounds, localBounds, drawShape, hitShape, textLayout, noteLayout } from './shapes.js'
 export { boundsUnion, boundsExpand } from './geometry.js'
